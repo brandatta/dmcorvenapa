@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :root{
   --bg: #d4fdb7;
   --brown: #64352c;
