@@ -298,7 +298,7 @@ export default function App() {
             if (f) doPreview(f);
           }}
         />
-        <div className="help">Se lee sin headers y se renombran columnas como a, b, c, ...</div>
+        <div className="help">Se lee sin encabezados y se renombran columnas como "a", "b, "c", ...</div>
 
         {loadingPreview && <Alert kind="warn">Procesando archivo...</Alert>}
         {msg && <Alert kind={msg.kind}>{msg.text}</Alert>}
@@ -306,7 +306,7 @@ export default function App() {
         {previewRows?.length > 0 && (
           <>
             <div style={{ marginTop: 12, fontWeight: 700 }}>
-              Vista previa del archivo (ya filtrado sin filas sin Sociedad):
+              Vista previa del archivo (ya filtrado sin filas "sin Sociedad"):
             </div>
 
             <div className="help" style={{ marginTop: 6 }}>
@@ -319,7 +319,7 @@ export default function App() {
 
             <div style={{ marginTop: 14 }}>
               <MultiSelectDropdown
-                label={"Clientes a excluir (columna 'b')"}
+                label={"Clientes a Excluir (columna 'b')"}
                 options={clientesUnicos}
                 value={clientesExcluir}
                 onChange={setClientesExcluir}
