@@ -310,7 +310,7 @@ export default function App() {
             </div>
 
             <div className="help" style={{ marginTop: 6 }}>
-              Mostrando <b>{previewRows.length}</b> filas.
+              Mostrando preview de <b>{previewRows.length}</b> filas.
             </div>
 
             <div style={{ marginTop: 10 }}>
