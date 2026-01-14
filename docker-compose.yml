@@ -1,0 +1,17 @@
+services:
+  backend:
+    build: ./backend
+    container_name: fbl1n-backend
+    env_file: .env
+    ports:
+      - "4000:4000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: fbl1n-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
