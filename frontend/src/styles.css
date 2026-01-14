@@ -1,13 +1,14 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
 :root{
   --bg: #d4fdb7;
   --brown: #64352c;
   --brown-dark: #4f2923;
   --alert-bg: #f6fff0;
   --white: #ffffff;
+}
+
+/* FIX: evita overflow por padding/width */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 html, body {
@@ -17,7 +18,7 @@ html, body {
 body{
   margin: 0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", "Noto Sans", "Liberation Sans", sans-serif;
-  background: #ffffff;   /* ← BLANCO */
+  background: #ffffff; /* Fondo blanco */
   color: var(--brown);
 }
 
@@ -53,6 +54,8 @@ body{
   border-radius: 10px;
   padding: 14px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  max-width: 100%;
+  overflow-x: hidden; /* FIX: evita desborde horizontal dentro del card */
 }
 
 .label{
@@ -68,11 +71,13 @@ body{
 input[type="file"]{
   display:block;
   width: 100%;
+  max-width: 100%;     /* FIX */
   padding: 10px;
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.12);
   background: var(--white);
   color: var(--brown);
+  overflow: hidden;    /* FIX: evita overflow visual */
 }
 
 /* =========================
@@ -146,6 +151,7 @@ input[type="file"]{
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.08);
   background: rgba(255,255,255,0.75);
+  max-width: 100%;
 }
 
 table{
@@ -177,6 +183,7 @@ th{
 
 .ms-trigger{
   width: 100%;
+  max-width: 100%;   /* FIX */
   min-height: 42px;
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.12);
@@ -204,10 +211,12 @@ th{
   background: rgba(255,255,255,0.92);
   padding: 10px;
   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+  max-width: 100%;
 }
 
 .ms-search input{
   width: 100%;
+  max-width: 100%;   /* FIX */
   min-height: 38px;
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.12);
@@ -221,6 +230,7 @@ th{
   display: flex;
   gap: 8px;
   margin-top: 8px;
+  flex-wrap: wrap;
 }
 
 .ms-mini{
