@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 
 const API_BASE = "/api"; // Nginx lo proxy a backend
+const PREVIEW_LIMIT = 20;
 
 function Alert({ kind = "warn", children }) {
   return <div className={`alert ${kind}`}>{children}</div>;
@@ -43,10 +44,125 @@ function DataTable({ rows }) {
   );
 }
 
+/**
+ * MultiSelect estilo Streamlit: dropdown + buscador + checklist (sin Ctrl).
+ */
+function MultiSelectDropdown({
+  label,
+  options,
+  value,
+  onChange,
+  placeholder = "Seleccioná uno o más...",
+}) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const wrapRef = useRef(null);
+
+  const filtered = useMemo(() => {
+    const qq = q.trim().toLowerCase();
+    if (!qq) return options;
+    return options.filter((o) => String(o).toLowerCase().includes(qq));
+  }, [q, options]);
+
+  const selectedSet = useMemo(() => new Set(value || []), [value]);
+
+  function toggle(v) {
+    const s = new Set(selectedSet);
+    if (s.has(v)) s.delete(v);
+    else s.add(v);
+    onChange(Array.from(s));
+  }
+
+  function selectAllFiltered() {
+    const s = new Set(selectedSet);
+    for (const o of filtered) s.add(o);
+    onChange(Array.from(s));
+  }
+
+  function clearAll() {
+    onChange([]);
+  }
+
+  // Cierra al click afuera
+  useEffect(() => {
+    function onDoc(e) {
+      if (!wrapRef.current) return;
+      if (!wrapRef.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  return (
+    <div className="ms-wrap" ref={wrapRef}>
+      <div className="label">{label}</div>
+
+      <button
+        type="button"
+        className="ms-trigger"
+        onClick={() => setOpen((x) => !x)}
+        aria-expanded={open}
+      >
+        <span className={value?.length ? "" : "ms-placeholder"}>
+          {value?.length ? `${value.length} seleccionado(s)` : placeholder}
+        </span>
+        <span className="ms-caret">▾</span>
+      </button>
+
+      {open && (
+        <div className="ms-popover">
+          <div className="ms-search">
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Buscar..."
+            />
+          </div>
+
+          <div className="ms-actions">
+            <button type="button" className="ms-mini" onClick={selectAllFiltered}>
+              Seleccionar visibles
+            </button>
+            <button type="button" className="ms-mini danger" onClick={clearAll}>
+              Limpiar
+            </button>
+          </div>
+
+          <div className="ms-list">
+            {filtered.length === 0 ? (
+              <div className="ms-empty">Sin resultados</div>
+            ) : (
+              filtered.map((opt) => {
+                const checked = selectedSet.has(opt);
+                return (
+                  <label key={opt} className="ms-item">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggle(opt)}
+                    />
+                    <span>{opt}</span>
+                  </label>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="help">
+        Seleccioná uno o más valores únicos de la columna 'b' para excluirlos de la carga.
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [file, setFile] = useState(null);
 
   const [previewRows, setPreviewRows] = useState([]);
+  const [previewTotal, setPreviewTotal] = useState(0);
+
   const [clientesUnicos, setClientesUnicos] = useState([]);
   const [clientesExcluir, setClientesExcluir] = useState([]);
 
@@ -91,10 +207,13 @@ export default function App() {
 
       setRemovedSociedad(Number(data.removedSociedad || 0));
       setTotalFilas(Number(data.totalFilas || 0));
-      setPreviewRows(data.preview || []);
+
+      const fullPreview = data.preview || [];
+      setPreviewTotal(fullPreview.length);
+      setPreviewRows(fullPreview.slice(0, PREVIEW_LIMIT));
+
       setClientesUnicos(data.clientesUnicos || []);
       setSumaO(Number(data.sumaO || 0));
-
       setClientesExcluir([]);
 
       if (data.emptyAfterFilter) {
@@ -103,17 +222,16 @@ export default function App() {
           text:
             "Luego de eliminar filas sin Sociedad, el archivo quedó vacío. Revisá el archivo de origen.",
         });
-      } else {
-        if (Number(data.removedSociedad || 0) > 0) {
-          setMsg({
-            kind: "warn",
-            text: `Se eliminaron ${data.removedSociedad} filas sin Sociedad en la primera columna (columna 'a').`,
-          });
-        }
+      } else if (Number(data.removedSociedad || 0) > 0) {
+        setMsg({
+          kind: "warn",
+          text: `Se eliminaron ${data.removedSociedad} filas sin Sociedad en la primera columna (columna 'a').`,
+        });
       }
     } catch (e) {
       setMsg({ kind: "error", text: String(e?.message || e) });
       setPreviewRows([]);
+      setPreviewTotal(0);
       setClientesUnicos([]);
       setTotalFilas(0);
       setSumaO(0);
@@ -155,7 +273,9 @@ export default function App() {
 
   const hasColO = useMemo(() => {
     // Si el preview trae objeto con key 'o', asumimos que existe
-    return previewRows?.length ? Object.prototype.hasOwnProperty.call(previewRows[0], "o") : true;
+    return previewRows?.length
+      ? Object.prototype.hasOwnProperty.call(previewRows[0], "o")
+      : true;
   }, [previewRows]);
 
   return (
@@ -188,29 +308,22 @@ export default function App() {
             <div style={{ marginTop: 12, fontWeight: 700 }}>
               Vista previa del archivo (ya filtrado sin filas sin Sociedad):
             </div>
+
+            <div className="help" style={{ marginTop: 6 }}>
+              Mostrando <b>{previewRows.length}</b> de <b>{previewTotal}</b> filas (preview).
+            </div>
+
             <div style={{ marginTop: 10 }}>
               <DataTable rows={previewRows} />
             </div>
 
             <div style={{ marginTop: 14 }}>
-              <div className="label">Clientes a excluir (columna 'b')</div>
-              <select
-                multiple
+              <MultiSelectDropdown
+                label={"Clientes a excluir (columna 'b')"}
+                options={clientesUnicos}
                 value={clientesExcluir}
-                onChange={(e) => {
-                  const opts = Array.from(e.target.selectedOptions).map((o) => o.value);
-                  setClientesExcluir(opts);
-                }}
-              >
-                {clientesUnicos.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-              <div className="help">
-                Seleccioná uno o más valores únicos de la columna 'b' para excluirlos de la carga.
-              </div>
+                onChange={setClientesExcluir}
+              />
 
               {clientesExcluir?.length > 0 && (
                 <Alert kind="warn">
