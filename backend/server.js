@@ -298,4 +298,33 @@ app.post("/api/load", upload.single("file"), async (req, res) => {
       `DELETE FROM \`${dbName}\`.\`${table}\` WHERE \`FechaDoc\` = '0000-00-00';`
     );
 
-    /
+    // Total final
+    const [totRows] = await conn.query(
+      `SELECT COUNT(*) AS c FROM \`${dbName}\`.\`${table}\`;`
+    );
+    const totalFinal = Number(totRows?.[0]?.c || 0);
+
+    // Limpieza temp files
+    try { fs.unlinkSync(req.file.path); } catch (_) {}
+    try { fs.unlinkSync(tmpCsv); } catch (_) {}
+
+    return res.json({
+      ok: true,
+      removedSociedad: sociedad.removed,
+      totalFinal,
+      filasInconsistentes: retenidas,
+    });
+  } catch (e) {
+    return res.status(500).json({ error: String(e?.message || e) });
+  } finally {
+    try {
+      if (conn) await conn.end();
+    } catch (_) {}
+  }
+});
+
+app.get("/health", (_req, res) => res.json({ ok: true }));
+
+app.listen(4000, () => {
+  console.log("Backend listening on :4000");
+});
