@@ -48,12 +48,7 @@ body{
   border: 1px solid rgba(0,0,0,0.08);
   border-radius: 10px;
   padding: 14px;
-}
-
-.row{
-  display:flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
 .label{
@@ -76,17 +71,11 @@ input[type="file"]{
   color: var(--brown);
 }
 
-select{
-  width: 100%;
-  min-height: 42px;
-  border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.12);
-  background: var(--white);
-  color: var(--brown);
-  padding: 8px;
-}
-
+/* =========================
+   Botones
+   ========================= */
 .btn-primary{
+  margin-top: 10px;
   background-color: var(--brown);
   border: 1px solid var(--brown);
   color: #fff;
@@ -106,6 +95,21 @@ select{
   cursor: not-allowed;
 }
 
+.btn-red-info{
+  margin-top: 10px;
+  background-color:#b91c1c;
+  color:white;
+  border:none;
+  padding:0.5rem 1rem;
+  border-radius:0.25rem;
+  font-weight:bold;
+  opacity: 0.9;
+  cursor: default;
+}
+
+/* =========================
+   Alerts
+   ========================= */
 .alert{
   background: var(--alert-bg);
   border: 1px solid rgba(0,0,0,0.08);
@@ -115,7 +119,6 @@ select{
   margin: 10px 0;
 }
 
-.alert.warn{ }
 .alert.error{
   background: #fff1f1;
 }
@@ -123,11 +126,17 @@ select{
   background: #f0fff4;
 }
 
+/* =========================
+   KPI
+   ========================= */
 .kpi{
   margin: 10px 0;
   font-weight: 700;
 }
 
+/* =========================
+   Tabla preview
+   ========================= */
 .table-wrap{
   overflow:auto;
   border-radius: 10px;
@@ -155,13 +164,108 @@ th{
   z-index: 1;
 }
 
-.btn-red-info{
-  margin-top: 10px;
-  background-color:#b91c1c;
-  color:white;
-  border:none;
-  padding:0.5rem 1rem;
-  border-radius:0.25rem;
-  font-weight:bold;
-  opacity: 0.9;
+/* =========================
+   MultiSelect estilo Streamlit
+   ========================= */
+.ms-wrap{
+  margin-top: 0;
 }
+
+.ms-trigger{
+  width: 100%;
+  min-height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: var(--white);
+  color: var(--brown);
+  padding: 10px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.ms-placeholder{
+  opacity: 0.75;
+}
+
+.ms-caret{
+  opacity: 0.8;
+}
+
+.ms-popover{
+  margin-top: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(255,255,255,0.92);
+  padding: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+}
+
+.ms-search input{
+  width: 100%;
+  min-height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.12);
+  padding: 8px 10px;
+  outline: none;
+  color: var(--brown);
+  background: var(--white);
+}
+
+.ms-actions{
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ms-mini{
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(255,255,255,0.85);
+  color: var(--brown);
+  font-weight: 700;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.ms-mini:hover{
+  background: rgba(255,255,255,1);
+}
+
+.ms-mini.danger{
+  border-color: rgba(185,28,28,0.35);
+  color: #b91c1c;
+}
+
+.ms-list{
+  margin-top: 10px;
+  max-height: 220px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.ms-item{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ms-item:hover{
+  background: rgba(0,0,0,0.04);
+}
+
+.ms-item input{
+  width: 16px;
+  height: 16px;
+}
+
+.ms-empty{
+  padding: 10px 6px;
+  opacity: 0.8;
+}
+
