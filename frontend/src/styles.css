@@ -13,7 +13,7 @@ html, body {
 body{
   margin: 0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", "Noto Sans", "Liberation Sans", sans-serif;
-  background: var(--bg);
+  background: #ffffff;   /* ← BLANCO */
   color: var(--brown);
 }
 
